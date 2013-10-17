@@ -34,7 +34,7 @@ def helper_select(movie)
   
 def helper_check(rating)
      if(params[:ratings] == nil)
-      return false
+      return true
      end
     return params[:ratings].has_key?(rating)
   end
