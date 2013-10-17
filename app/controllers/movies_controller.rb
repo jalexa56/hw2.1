@@ -6,26 +6,21 @@ class MoviesController < ApplicationController
   end
 
   def index
-     filters = {:sort => "", :ratings => {}}
-    redirect = false
-    filters.each do |filter, default|
-
-      if params[filter].blank?
-        if !session[filter].blank?
-          redirect = true
-          params[filter] = session[filter]
-        else
-          params[filter] = default
-        end
-      end
-      session[filter] = params[filter]
-
-    end
-    redirect_to movies_path(:sort => params[:sort], :ratings => params[:ratings]) if redirect
-
+     
+     @movies = Movie.where("1 = 1") # Ack
     @all_ratings = Movie.ratings
-    
-    @movies = Movie.filtered(params)
+    @category = params[:category]
+    @sort = params[:sort]
+    @ratings = params[:ratings]
+    if @ratings
+        @movies = @movies.where("rating in (?)", @ratings.keys)
+    else
+      @ratings = {"G" => "1", "PG" => "1", "PG-13" => "1", "R" => "1"}
+    end
+    if @category and @sort
+      @movies = @movies.find(:all, :order => "#{@category} #{@sort}")
+    end
+
   end
 
   def new
